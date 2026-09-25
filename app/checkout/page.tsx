@@ -6,7 +6,12 @@ import { useCart } from "@/components/CartProvider";
 import { formatINR } from "@/lib/format";
 
 type Me = { id: number; email: string; name: string; phone: string | null; role: string };
-type CheckoutConfig = { razorpayEnabled: boolean; storeName: string; upiVpa: string };
+type CheckoutConfig = {
+  razorpayEnabled: boolean;
+  storeName: string;
+  upiVpa: string;
+  razorpayMeUrl?: string;
+};
 
 type Address = {
   shipName: string;
@@ -402,8 +407,21 @@ export default function CheckoutPage() {
                   </span>
                 </label>
                 <div className="banner banner-info">
-                  Online payments coming soon — admin has not configured Razorpay yet.
+                  Online card payments coming soon — admin has not configured Razorpay keys yet.
                   {config?.upiVpa ? ` You can also UPI the exact amount to ${config.upiVpa}.` : ""}
+                  {config?.razorpayMeUrl ? (
+                    <>
+                      {" "}
+                      Prefer paying online now?{" "}
+                      <a href={config.razorpayMeUrl} target="_blank" rel="noopener noreferrer">
+                        Pay via UPI / card here
+                      </a>{" "}
+                      (opens our Razorpay page) — then place this order as Cash on Delivery and
+                      the store will confirm your order once the payment is received.
+                    </>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
             )}

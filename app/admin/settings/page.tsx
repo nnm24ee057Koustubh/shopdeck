@@ -47,6 +47,16 @@ export default async function AdminSettingsPage({
             <input id="upiVpa" name="upiVpa" type="text" placeholder="yourname@upi" defaultValue={settings.upiVpa} />
           </div>
           <div>
+            <label htmlFor="razorpayMeUrl">Razorpay.me UPI payment link</label>
+            <input
+              id="razorpayMeUrl"
+              name="razorpayMeUrl"
+              type="url"
+              placeholder="https://razorpay.me/@yourhandle"
+              defaultValue={settings.razorpayMeUrl}
+            />
+          </div>
+          <div>
             <label htmlFor="razorpayKeyId">Razorpay Key ID</label>
             <input
               id="razorpayKeyId"

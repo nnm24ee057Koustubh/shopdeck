@@ -14,6 +14,7 @@ export async function GET() {
     razorpayEnabled: Boolean(configured),
     storeName: settings.storeName,
     upiVpa: settings.upiVpa ?? "",
+    razorpayMeUrl: settings.razorpayMeUrl ?? "",
   });
 }
 

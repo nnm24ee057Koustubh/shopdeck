@@ -149,6 +149,7 @@ const settings = [
   { key: "storeName", value: "ShopDeck" },
   { key: "contactEmail", value: "support@shopdeck.local" },
   { key: "contactPhone", value: "+91 90000 00000" },
+  { key: "razorpayMeUrl", value: "https://razorpay.me/@koustubhdeshpande" },
   {
     key: "businessAddress",
     value: "ShopDeck Retail, 4th Floor, Prestige Tech Park, Bengaluru, Karnataka 560103",

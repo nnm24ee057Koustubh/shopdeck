@@ -13,6 +13,7 @@ const EDITABLE_SETTING_KEYS = [
   "contactPhone",
   "businessAddress",
   "upiVpa",
+  "razorpayMeUrl",
   "razorpayKeyId",
   "razorpayKeySecret",
 ] as const;

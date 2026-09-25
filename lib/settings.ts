@@ -5,6 +5,7 @@ export const SETTING_DEFAULTS: Record<string, string> = {
   razorpayKeyId: "",
   razorpayKeySecret: "",
   upiVpa: "",
+  razorpayMeUrl: "",
   contactEmail: "support@shopdeck.local",
   contactPhone: "",
   businessAddress: "",
