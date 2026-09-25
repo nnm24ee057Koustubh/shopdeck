@@ -1,0 +1,31 @@
+name: Deploy to Vercel
+on: workflow_dispatch
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Database, env vars, deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+        run: |
+          set -x
+          echo "=== 1. Push database schema to Neon ==="
+          npx prisma db push
+          echo "=== 2. Seed database (skips if already seeded) ==="
+          node prisma/seed.mjs
+          echo "=== 3. Ensure Vercel project exists ==="
+          curl -s -X POST "https://api.vercel.com/v9/projects" -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" -d '{"name":"shopdeck","framework":"nextjs"}' | head -c 600
+          echo
+          echo "=== 4. Set env vars on Vercel ==="
+          curl -s -X POST "https://api.vercel.com/v10/projects/shopdeck/env?upsert=true" -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" -d "[{\"key\":\"DATABASE_URL\",\"value\":\"$DATABASE_URL\",\"type\":\"encrypted\",\"target\":[\"production\"]},{\"key\":\"SESSION_SECRET\",\"value\":\"$SESSION_SECRET\",\"type\":\"encrypted\",\"target\":[\"production\"]}]" | head -c 600
+          echo
+          echo "=== 5. Link project ==="
+          npx --yes vercel@latest link --yes --project shopdeck --token "$VERCEL_TOKEN"
+          echo "=== 6. Deploy ==="
+          npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"

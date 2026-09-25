@@ -162,6 +162,11 @@ const settings = [
 ];
 
 async function main() {
+  const existingAdmin = await prisma.user.findFirst({ where: { role: "ADMIN" } });
+  if (existingAdmin) {
+    console.log("Admin user already exists — skipping seed to preserve live data.");
+    return;
+  }
   console.log("Seeding ShopDeck database...");
 
   // Wipe existing catalog data (safe for a fresh dev database).
