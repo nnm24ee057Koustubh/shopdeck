@@ -9,26 +9,23 @@ jobs:
           RENDER_KEY: ${{ secrets.RENDER_KEY }}
         run: |
           H="Authorization: Bearer $RENDER_KEY"
-          echo "=== OWNERS ==="
-          curl -s -H "$H" https://api.render.com/v1/owners
-          echo
-          echo "=== INSTANCE TYPES (diagnostic) ==="
-          curl -s -H "$H" "https://api.render.com/v1/instance-types" | head -c 1500
-          echo
           OWNER_ID=$(curl -s -H "$H" https://api.render.com/v1/owners | jq -r '.[0].owner.id // .[0].id')
+          echo "OWNER_ID=$OWNER_ID"
           SSECRET=$(openssl rand -hex 32)
           mk() {
-            jq -n --arg oid "$OWNER_ID" --arg s "$SSECRET" '{type:"web_service", ownerId:$oid, name:"shopdeck", repo:"https://github.com/nnm24ee057Koustubh/shopdeck", branch:"main", autoDeploy:"yes", region:"singapore", buildCommand:"npm install && npm run build", startCommand:"npx prisma db push && node prisma/seed.mjs && npm start", envVars:[{key:"SESSION_SECRET",value:$s},{key:"DATABASE_URL",value:"file:./dev.db"},{key:"NODE_VERSION",value:"20"}]}'
+            jq -n --arg oid "$OWNER_ID" --arg s "$SSECRET" --arg plan "$1" '
+              def details(p): if p == "" then {name:"shopdeck", branch:"main", autoDeploy:"yes", region:"singapore", buildCommand:"npm install && npm run build", startCommand:"npx prisma db push && node prisma/seed.mjs && npm start", envVars:[{key:"SESSION_SECRET",value:$s},{key:"DATABASE_URL",value:"file:./dev.db"},{key:"NODE_VERSION",value:"20"}]} else ({name:"shopdeck", branch:"main", autoDeploy:"yes", region:"singapore", buildCommand:"npm install && npm run build", startCommand:"npx prisma db push && node prisma/seed.mjs && npm start", envVars:[{key:"SESSION_SECRET",value:$s},{key:"DATABASE_URL",value:"file:./dev.db"},{key:"NODE_VERSION",value:"20"}]} + {plan:p}) end;
+              {type:"web_service", ownerId:$oid, repo:"https://github.com/nnm24ee057Koustubh/shopdeck", serviceDetails:details($plan)}'
           }
-          mk > /tmp/base.json
-          jq '. + {plan:"free"}' /tmp/base.json > /tmp/b1.json
-          echo "=== ATTEMPT 1 (plan: free) ==="
+          mk "free" > /tmp/b1.json
+          mk "" > /tmp/b2.json
+          echo "=== ATTEMPT 1 (nested + plan free) ==="
           R=$(curl -s -w "\nHTTPCODE:%{http_code}" -X POST -H "$H" -H "Content-Type: application/json" -d @/tmp/b1.json https://api.render.com/v1/services)
           echo "$R"
           CODE=$(echo "$R" | tail -1 | sed 's/HTTPCODE://')
           if [ "$CODE" != "201" ]; then
-            echo "=== ATTEMPT 2 (no plan field) ==="
-            R=$(curl -s -w "\nHTTPCODE:%{http_code}" -X POST -H "$H" -H "Content-Type: application/json" -d @/tmp/base.json https://api.render.com/v1/services)
+            echo "=== ATTEMPT 2 (nested, no plan) ==="
+            R=$(curl -s -w "\nHTTPCODE:%{http_code}" -X POST -H "$H" -H "Content-Type: application/json" -d @/tmp/b2.json https://api.render.com/v1/services)
             echo "$R"
             CODE=$(echo "$R" | tail -1 | sed 's/HTTPCODE://')
           fi
