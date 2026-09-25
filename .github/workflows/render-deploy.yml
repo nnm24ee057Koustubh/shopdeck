@@ -15,7 +15,7 @@ jobs:
           echo "=== INSTANCE TYPES (diagnostic) ==="
           curl -s -H "$H" "https://api.render.com/v1/instance-types" | head -c 1500
           echo
-          OWNER_ID=$(curl -s -H "$H" https://api.render.com/v1/owners | jq -r '.[0].id')
+          OWNER_ID=$(curl -s -H "$H" https://api.render.com/v1/owners | jq -r '.[0].owner.id // .[0].id')
           SSECRET=$(openssl rand -hex 32)
           mk() {
             jq -n --arg oid "$OWNER_ID" --arg s "$SSECRET" '{type:"web_service", ownerId:$oid, name:"shopdeck", repo:"https://github.com/nnm24ee057Koustubh/shopdeck", branch:"main", autoDeploy:"yes", region:"singapore", buildCommand:"npm install && npm run build", startCommand:"npx prisma db push && node prisma/seed.mjs && npm start", envVars:[{key:"SESSION_SECRET",value:$s},{key:"DATABASE_URL",value:"file:./dev.db"},{key:"NODE_VERSION",value:"20"}]}'
