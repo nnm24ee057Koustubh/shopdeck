@@ -15,6 +15,8 @@ jobs:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: |
           set -x
+          echo "=== 0. Install dependencies (pins Prisma to project version) ==="
+          npm install --no-audit --no-fund
           echo "=== 1. Push database schema to Neon ==="
           npx prisma db push
           echo "=== 2. Seed database (skips if already seeded) ==="
