@@ -26,7 +26,7 @@ jobs:
           echo "=== 2b. Rename store in database if old name ==="
           node -e "const {PrismaClient}=require('@prisma/client');(async()=>{const p=new PrismaClient();const s=await p.setting.findUnique({where:{key:'storeName'}});if(s&&s.value==='ShopDeck'){await p.setting.update({where:{key:'storeName'},data:{value:'Unic'}});console.log('storeName: ShopDeck -> Unic')}else{console.log('storeName already:',s&&s.value)}await p.\$disconnect()})()" || true
           echo "=== 2c. Purge old-brand settings and admin email ==="
-          node -e "const {PrismaClient}=require('@prisma/client');(async()=>{const p=new PrismaClient();await p.setting.updateMany({where:{key:'contactEmail',value:{contains:'shopdeck'}}},data:{value:'koustubhrd2005@gmail.com'}});const a=await p.setting.findFirst({where:{key:'businessAddress',value:{contains:'ShopDeck'}}});if(a){await p.setting.update({where:{key:'businessAddress'},data:{value:'Unic — delivering across India'}});console.log('businessAddress updated')}const u=await p.user.findUnique({where:{email:'admin@shopdeck.local'}});if(u){await p.user.update({where:{id:u.id},data:{email:'admin@unic.local'}});console.log('admin email -> admin@unic.local')}await p.\$disconnect()})()" || true
+          node prisma/migrate-brand.mjs || true
           echo "=== 3. Ensure Vercel project exists ==="
           curl -s -X POST "https://api.vercel.com/v9/projects" -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" -d '{"name":"unic","framework":"nextjs"}' | head -c 600
           echo
