@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { getSettings } from "@/lib/settings";
 import LogoutButton from "./LogoutButton";
 import CartCount from "./CartCount";
+import WishlistCount from "./WishlistCount";
 
 export default async function Header() {
   const [user, settings] = await Promise.all([getSession(), getSettings()]);
@@ -20,6 +21,7 @@ export default async function Header() {
             My Orders
           </Link>
           <CartCount />
+          <WishlistCount />
           {user ? (
             <>
               {user.role === "ADMIN" && (

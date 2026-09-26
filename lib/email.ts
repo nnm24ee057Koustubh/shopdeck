@@ -22,7 +22,7 @@ export async function sendMail(to: string, subject: string, text: string): Promi
   const from = process.env.GMAIL_USER;
   if (!t || !from) return; // email not configured — silently skip
   try {
-    await t.sendMail({ from: `"ShopDeck" <${from}>`, to, subject, text });
+    await t.sendMail({ from: `"Unic" <${from}>`, to, subject, text });
   } catch (err) {
     console.error("[email] send failed:", err);
   }
@@ -65,7 +65,7 @@ export async function notifyCustomerStatus(orderId: number, status: string): Pro
   const label = statusLabel(status);
   await sendMail(
     em.customerEmail,
-    `Your ShopDeck order #${orderId} is now ${label}`,
+    `Your Unic order #${orderId} is now ${label}`,
     `Hello ${em.customerName},\n\nYour order status has been updated.\n\n${em.body}\n\nCurrent status: ${label}\n\nThank you for shopping with us.`
   );
 }

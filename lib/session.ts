@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { db } from "./db";
 
-const COOKIE_NAME = "shopdeck_session";
+const COOKIE_NAME = "unic_session";
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
 export type SessionUser = {
@@ -15,7 +15,7 @@ export type SessionUser = {
 };
 
 function getSecret(): string {
-  return process.env.SESSION_SECRET || "shopdeck-dev-secret-change-me";
+  return process.env.SESSION_SECRET || "unic-dev-secret-change-me";
 }
 
 function sign(payload: string): string {

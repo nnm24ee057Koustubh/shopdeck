@@ -1,7 +1,7 @@
 import { db } from "./db";
 
 export const SETTING_DEFAULTS: Record<string, string> = {
-  storeName: "ShopDeck",
+  storeName: "Unic",
   razorpayKeyId: "",
   razorpayKeySecret: "",
   upiVpa: "",

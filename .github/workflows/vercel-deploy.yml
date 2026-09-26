@@ -23,14 +23,16 @@ jobs:
           npx prisma db push
           echo "=== 2. Seed database (skips if already seeded) ==="
           node prisma/seed.mjs
+          echo "=== 2b. Rename store in database if old name ==="
+          node -e "const {PrismaClient}=require('@prisma/client');(async()=>{const p=new PrismaClient();const s=await p.setting.findUnique({where:{key:'storeName'}});if(s&&s.value==='ShopDeck'){await p.setting.update({where:{key:'storeName'},data:{value:'Unic'}});console.log('storeName: ShopDeck -> Unic')}else{console.log('storeName already:',s&&s.value)}await p.\$disconnect()})()" || true
           echo "=== 3. Ensure Vercel project exists ==="
-          curl -s -X POST "https://api.vercel.com/v9/projects" -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" -d '{"name":"shopdeck","framework":"nextjs"}' | head -c 600
+          curl -s -X POST "https://api.vercel.com/v9/projects" -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" -d '{"name":"unic","framework":"nextjs"}' | head -c 600
           echo
           echo "=== 4. Set env vars on Vercel ==="
           ENV_JSON=$(jq -n --arg db "$DATABASE_URL" --arg ss "$SESSION_SECRET" --arg gu "$GMAIL_USER" --arg gp "$GMAIL_APP_PASSWORD" '[{"key":"DATABASE_URL","value":$db,"type":"encrypted","target":["production"]},{"key":"SESSION_SECRET","value":$ss,"type":"encrypted","target":["production"]}] + (if ($gu != "" and $gp != "") then [{"key":"GMAIL_USER","value":$gu,"type":"encrypted","target":["production"]},{"key":"GMAIL_APP_PASSWORD","value":$gp,"type":"encrypted","target":["production"]}] else [] end)')
-          curl -s -X POST "https://api.vercel.com/v10/projects/shopdeck/env?upsert=true" -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" -d "$ENV_JSON" | head -c 600
+          curl -s -X POST "https://api.vercel.com/v10/projects/unic/env?upsert=true" -H "Authorization: Bearer $VERCEL_TOKEN" -H "Content-Type: application/json" -d "$ENV_JSON" | head -c 600
           echo
           echo "=== 5. Link project ==="
-          npx --yes vercel@latest link --yes --project shopdeck --token "$VERCEL_TOKEN"
+          npx --yes vercel@latest link --yes --project unic --token "$VERCEL_TOKEN"
           echo "=== 6. Deploy ==="
           npx --yes vercel@latest deploy --prod --yes --token "$VERCEL_TOKEN"

@@ -1,5 +1,5 @@
 /* ============================================================
-   ShopDeck — hand-written global stylesheet
+   Unic — hand-written global stylesheet
    Clean modern retail look: white surfaces, indigo accent,
    12px radii, subtle shadows, responsive grids.
    ============================================================ */
@@ -1055,3 +1055,43 @@ textarea {
 .text-right { text-align: right; }
 .font-bold { font-weight: 700; }
 .nowrap { white-space: nowrap; }
+
+/* ===== Unic additions: wishlist, low-stock, share ===== */
+.product-card { position: relative; }
+.wishlist-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.94);
+  color: #e0245e;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.12s ease;
+}
+.wishlist-btn:hover { transform: scale(1.1); }
+.wishlist-active { background: #ffe9ef; }
+.stock-badge-low {
+  display: inline-block;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 999px;
+  margin: 2px 0 6px;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}

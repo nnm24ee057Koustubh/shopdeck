@@ -1,6 +1,6 @@
-# ShopDeck
+# Unic
 
-ShopDeck is a complete, production-ready e-commerce marketplace built with Next.js 14 (App Router), TypeScript, Prisma and SQLite. It ships with a full customer storefront and a single-admin back office — products, a live order ledger with a status machine, customer profiles, and money tracking with Razorpay online payments (or Cash on Delivery when Razorpay is not configured).
+Unic is a complete, production-ready e-commerce marketplace built with Next.js 14 (App Router), TypeScript, Prisma and SQLite. It ships with a full customer storefront and a single-admin back office — products, a live order ledger with a status machine, customer profiles, and money tracking with Razorpay online payments (or Cash on Delivery when Razorpay is not configured).
 
 ## Features
 
@@ -63,7 +63,7 @@ Scripts:
 
 1. Create an account at [razorpay.com](https://razorpay.com) and complete KYC.
 2. In the Razorpay dashboard, go to **Settings → API Keys** and generate **Test** keys.
-3. In ShopDeck, go to **Admin → Settings** and paste the **Key ID** and **Key Secret**. Save.
+3. In Unic, go to **Admin → Settings** and paste the **Key ID** and **Key Secret**. Save.
 4. The checkout page will now offer “Pay online with Razorpay (UPI/Cards/Netbanking)”.
 5. Test with the standard test card: `4111 1111 1111 1111`, any future expiry, any CVV.
 6. Once you are done testing, paste your **Live** keys in Admin → Settings (after completing KYC).
@@ -72,7 +72,7 @@ No page reloads or code changes are needed — the checkout reads the keys live.
 
 ## How money reaches your bank
 
-Online payments are collected by Razorpay and **settled automatically to the bank account linked in your Razorpay dashboard**, typically on a **T+2** schedule. ShopDeck’s **Admin → Money** page does not move money — it is a tracking / reconciliation tool: it shows online payments received, COD collected, refunds issued, the net balance, and lets you record settlements as they hit your bank so you can see what is still pending.
+Online payments are collected by Razorpay and **settled automatically to the bank account linked in your Razorpay dashboard**, typically on a **T+2** schedule. Unic’s **Admin → Money** page does not move money — it is a tracking / reconciliation tool: it shows online payments received, COD collected, refunds issued, the net balance, and lets you record settlements as they hit your bank so you can see what is still pending.
 
 ## Deployment
 

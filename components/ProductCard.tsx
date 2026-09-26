@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AddToCartButton from "./AddToCartButton";
+import WishlistButton from "./WishlistButton";
 
 export type ProductCardData = {
   id: number;
@@ -12,6 +13,7 @@ export type ProductCardData = {
 export default function ProductCard({ product }: { product: ProductCardData }) {
   return (
     <div className="product-card">
+      <WishlistButton productId={product.id} />
       <Link href={`/products/${product.id}`} className="product-card-media">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={product.imageUrl} alt={product.name} loading="lazy" />
@@ -20,6 +22,9 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
         <Link href={`/products/${product.id}`} className="product-card-name">
           {product.name}
         </Link>
+        {product.stock > 0 && product.stock <= 5 && (
+          <div className="stock-badge-low">Only {product.stock} left</div>
+        )}
         <div className="product-card-price">
           {new Intl.NumberFormat("en-IN", {
             style: "currency",

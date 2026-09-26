@@ -207,7 +207,7 @@ export default function CheckoutPage() {
         key: data.keyId ?? "",
         amount: data.amount ?? total,
         currency: "INR",
-        name: config?.storeName ?? "ShopDeck",
+        name: config?.storeName ?? "Unic",
         description: `Order #${data.orderId}`,
         order_id: data.razorpayOrderId ?? "",
         prefill: {

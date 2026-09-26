@@ -1,4 +1,4 @@
-// Seed script for ShopDeck. Run with: node prisma/seed.mjs
+// Seed script for Unic. Run with: node prisma/seed.mjs
 // (after `npx prisma db push`).
 // Uses a plain-JS inline scrypt hash identical to lib/password.ts:
 // format: scrypt$16384$8$1$<saltHex>$<keyHex>  (keylen 64)
@@ -146,13 +146,13 @@ const products = [
 ];
 
 const settings = [
-  { key: "storeName", value: "ShopDeck" },
+  { key: "storeName", value: "Unic" },
   { key: "contactEmail", value: "support@shopdeck.local" },
   { key: "contactPhone", value: "+91 90000 00000" },
   { key: "razorpayMeUrl", value: "https://razorpay.me/@koustubhdeshpande" },
   {
     key: "businessAddress",
-    value: "ShopDeck Retail, 4th Floor, Prestige Tech Park, Bengaluru, Karnataka 560103",
+    value: "Unic Retail, 4th Floor, Prestige Tech Park, Bengaluru, Karnataka 560103",
   },
   {
     key: "adminPasswordNote",
@@ -167,7 +167,7 @@ async function main() {
     console.log("Admin user already exists — skipping seed to preserve live data.");
     return;
   }
-  console.log("Seeding ShopDeck database...");
+  console.log("Seeding Unic database...");
 
   // Wipe existing catalog data (safe for a fresh dev database).
   await prisma.orderItem.deleteMany();

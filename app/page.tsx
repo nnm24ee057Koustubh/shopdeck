@@ -17,7 +17,7 @@ export default async function HomePage() {
   return (
     <div>
       <section className="hero">
-        <h1>Everything you love, in one deck.</h1>
+        <h1>Unique finds for everything you love.</h1>
         <p>
           Electronics, fashion, home, beauty and sports — at fair prices, delivered across India.
           Pay online or choose Cash on Delivery.
