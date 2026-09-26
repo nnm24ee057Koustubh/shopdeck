@@ -3,7 +3,7 @@ import { db } from "./db";
 import { getSettings } from "./settings";
 import { formatINR, statusLabel } from "./format";
 
-const PLACEHOLDER_EMAIL = "support@shopdeck.local";
+const PLACEHOLDER_EMAIL = "support@unic.local";
 
 function transport() {
   const user = process.env.GMAIL_USER;

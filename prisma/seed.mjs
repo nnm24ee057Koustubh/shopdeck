@@ -147,7 +147,7 @@ const products = [
 
 const settings = [
   { key: "storeName", value: "Unic" },
-  { key: "contactEmail", value: "support@shopdeck.local" },
+  { key: "contactEmail", value: "koustubhrd2005@gmail.com" },
   { key: "contactPhone", value: "+91 90000 00000" },
   { key: "razorpayMeUrl", value: "https://razorpay.me/@koustubhdeshpande" },
   {
@@ -157,7 +157,7 @@ const settings = [
   {
     key: "adminPasswordNote",
     value:
-      "Default admin credentials: admin@shopdeck.local / Admin@123 — change this password immediately from Admin > Settings.",
+      "Default admin credentials: admin@unic.local / Admin@123 — change this password immediately from Admin > Settings.",
   },
 ];
 
@@ -184,14 +184,14 @@ async function main() {
   // Admin user.
   await prisma.user.create({
     data: {
-      email: "admin@shopdeck.local",
+      email: "admin@unic.local",
       passwordHash: hashPassword("Admin@123"),
       name: "Store Owner",
       phone: "+91 90000 00000",
       role: "ADMIN",
     },
   });
-  console.log("Created admin user admin@shopdeck.local (password: Admin@123)");
+  console.log("Created admin user admin@unic.local (password: Admin@123)");
 
   // Categories.
   const slugToId = {};

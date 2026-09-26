@@ -24,6 +24,10 @@ function LoginForm() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
+      if (res.status === 403 && data.needsVerification) {
+        router.push("/verify?email=" + encodeURIComponent(email));
+        return;
+      }
       if (!res.ok) {
         setError(data.error ?? "Invalid email or password.");
         setBusy(false);

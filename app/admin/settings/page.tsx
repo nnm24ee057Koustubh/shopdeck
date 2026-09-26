@@ -17,9 +17,11 @@ export default async function AdminSettingsPage({
       <h1 className="page-title">Settings</h1>
       {saved && <div className="banner banner-success">Saved successfully.</div>}
       {pwError === "1" && <div className="banner banner-error">Current password is incorrect.</div>}
-      {pwError === "short" && (
-        <div className="banner banner-error">New password must be at least 8 characters.</div>
-      )}
+      {pwError === "short" || pwError === "weak" ? (
+        <div className="banner banner-error">
+          New password must be at least 8 characters and include letters and numbers.
+        </div>
+      ) : null}
 
       <div className="cart-layout">
         <form action={updateSettings} className="card form-stack">

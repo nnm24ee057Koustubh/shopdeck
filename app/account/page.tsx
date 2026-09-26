@@ -7,17 +7,26 @@ export const dynamic = "force-dynamic";
 export default async function AccountPage({
   searchParams,
 }: {
-  searchParams: { saved?: string };
+  searchParams: { saved?: string; pwerror?: string };
 }) {
   const user = await getSession();
   if (!user) redirect("/login?next=/account");
 
   const saved = searchParams.saved === "1";
+  const pwError = searchParams.pwerror;
 
   return (
     <div>
       <h1 className="page-title">My account</h1>
       {saved && <div className="banner banner-success">Saved successfully.</div>}
+      {pwError === "1" && (
+        <div className="banner banner-error">Current password is incorrect.</div>
+      )}
+      {(pwError === "short" || pwError === "weak") && (
+        <div className="banner banner-error">
+          New password must be at least 8 characters and include letters and numbers.
+        </div>
+      )}
 
       <div className="cart-layout">
         <form action={updateProfile} className="card form-stack">

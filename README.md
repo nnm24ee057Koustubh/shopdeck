@@ -54,7 +54,7 @@ Scripts:
 
 ## Default admin login
 
-- **Email:** `admin@shopdeck.local`
+- **Email:** `admin@unic.local`
 - **Password:** `Admin@123`
 
 ⚠️ **Change this password immediately** after your first login: Admin → Settings → “Change admin password”. The default credentials are also shown on the admin Settings page as a reminder.

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { hashPassword, verifyPassword } from "@/lib/password";
+import { passwordProblem } from "@/lib/security";
 import { getSession, requireAdmin } from "@/lib/session";
 import { setSettings } from "@/lib/settings";
 
@@ -43,8 +44,8 @@ export async function changePassword(formData: FormData): Promise<void> {
   if (!dbUser || !verifyPassword(currentPassword, dbUser.passwordHash)) {
     redirect(`${redirectTo}?pwerror=1`);
   }
-  if (newPassword.length < 8) {
-    redirect(`${redirectTo}?pwerror=short`);
+  if (passwordProblem(newPassword)) {
+    redirect(`${redirectTo}?pwerror=weak`);
   }
 
   await db.user.update({

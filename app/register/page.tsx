@@ -32,6 +32,10 @@ function RegisterForm() {
         setBusy(false);
         return;
       }
+      if (data.needsVerification) {
+        router.push("/verify?email=" + encodeURIComponent(form.email));
+        return;
+      }
       router.push(next);
       router.refresh();
     } catch {
@@ -88,7 +92,7 @@ function RegisterForm() {
             value={form.password}
             onChange={(e) => update("password", e.target.value)}
           />
-          <p className="small muted mt-8">At least 8 characters.</p>
+          <p className="small muted mt-8">At least 8 characters, with letters and numbers.</p>
         </div>
         <button type="submit" className="btn btn-primary" disabled={busy}>
           {busy ? "Creating account…" : "Create account"}

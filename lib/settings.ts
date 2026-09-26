@@ -6,11 +6,11 @@ export const SETTING_DEFAULTS: Record<string, string> = {
   razorpayKeySecret: "",
   upiVpa: "",
   razorpayMeUrl: "",
-  contactEmail: "support@shopdeck.local",
+  contactEmail: "koustubhrd2005@gmail.com",
   contactPhone: "",
   businessAddress: "",
   adminPasswordNote:
-    "Default admin credentials: admin@shopdeck.local / Admin@123 — change this password immediately from Admin > Settings.",
+    "Default admin credentials: admin@unic.local / Admin@123 — change this password immediately from Admin > Settings.",
 };
 
 export async function getSettings(): Promise<Record<string, string>> {
