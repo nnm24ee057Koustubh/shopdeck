@@ -7,6 +7,8 @@ export const SETTING_DEFAULTS: Record<string, string> = {
   upiVpa: "",
   razorpayMeUrl: "",
   contactEmail: "koustubhrd2005@gmail.com",
+  contactEmailChanges: "0",
+  announcementText: "",
   contactPhone: "",
   businessAddress: "",
   adminPasswordNote:

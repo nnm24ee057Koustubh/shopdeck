@@ -15,7 +15,8 @@ const REVENUE_WHERE = {
 };
 
 export default async function AdminDashboardPage() {
-  const [revenueAgg, orderCount, customerCount, lowStock, pendingOrders, recentOrders] =
+  const since = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000);
+  const [revenueAgg, orderCount, customerCount, lowStock, pendingOrders, recentOrders, chartOrders] =
     await Promise.all([
       db.order.aggregate({ _sum: { total: true }, where: REVENUE_WHERE }),
       db.order.count(),
@@ -31,7 +32,24 @@ export default async function AdminDashboardPage() {
         take: 10,
         include: { user: true, items: true },
       }),
+      db.order.findMany({
+        where: { createdAt: { gte: since }, ...REVENUE_WHERE },
+        select: { total: true, createdAt: true },
+      }),
     ]);
+
+  // Daily revenue for the last 30 days (for the chart).
+  const days: { label: string; revenue: number }[] = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(Date.now() - i * 86400000);
+    days.push({ label: `${d.getDate()}/${d.getMonth() + 1}`, revenue: 0 });
+  }
+  for (const o of chartOrders) {
+    const diff = Math.floor((Date.now() - o.createdAt.getTime()) / 86400000);
+    if (diff >= 0 && diff < 30) days[29 - diff].revenue += o.total;
+  }
+  const maxRevenue = Math.max(...days.map((d) => d.revenue), 1);
+  const monthRevenue = chartOrders.reduce((s, o) => s + o.total, 0);
 
   return (
     <div>
@@ -58,6 +76,42 @@ export default async function AdminDashboardPage() {
           <div className="stat-value">{lowStock.length}</div>
           <div className="small muted">Products under 5 units</div>
         </div>
+      </div>
+
+      <div className="card chart-card">
+        <h2 className="section-title mt-0">
+          Revenue — last 30 days <span className="muted small">({formatINR(monthRevenue)} in this period)</span>
+        </h2>
+        {chartOrders.length === 0 ? (
+          <p className="muted">No sales in this period yet. Revenue will appear here as orders come in.</p>
+        ) : (
+          <svg viewBox="0 0 620 170" className="revenue-chart" role="img" aria-label="Daily revenue for the last 30 days">
+            <line x1="0" y1="150" x2="620" y2="150" stroke="var(--border)" strokeWidth="1" />
+            {days.map((d, i) => {
+              const h = Math.max(2, Math.round((d.revenue / maxRevenue) * 120));
+              return (
+                <g key={i}>
+                  <rect
+                    x={i * 20 + 3}
+                    y={150 - h}
+                    width="14"
+                    height={h}
+                    rx="3"
+                    fill="var(--accent)"
+                    opacity={d.revenue > 0 ? 0.9 : 0.25}
+                  >
+                    <title>{`${d.label}: ${formatINR(d.revenue)}`}</title>
+                  </rect>
+                  {i % 5 === 0 && (
+                    <text x={i * 20 + 10} y="165" textAnchor="middle" fontSize="10" fill="var(--muted)">
+                      {d.label}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </svg>
+        )}
       </div>
 
       <h2 className="section-title">Awaiting approval</h2>

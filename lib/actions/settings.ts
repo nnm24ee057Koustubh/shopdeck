@@ -6,13 +6,14 @@ import { db } from "@/lib/db";
 import { hashPassword, verifyPassword } from "@/lib/password";
 import { passwordProblem } from "@/lib/security";
 import { getSession, requireAdmin } from "@/lib/session";
-import { setSettings } from "@/lib/settings";
+import { getSettings, setSettings } from "@/lib/settings";
 
 const EDITABLE_SETTING_KEYS = [
   "storeName",
   "contactEmail",
   "contactPhone",
   "businessAddress",
+  "announcementText",
   "upiVpa",
   "razorpayMeUrl",
   "razorpayKeyId",
@@ -26,6 +27,18 @@ export async function updateSettings(formData: FormData): Promise<void> {
   for (const key of EDITABLE_SETTING_KEYS) {
     patch[key] = String(formData.get(key) ?? "").trim();
   }
+
+  // Contact email rule: it may be changed at most ONCE after being first set,
+  // and is permanently locked after that.
+  const current = await getSettings();
+  if (patch.contactEmail && patch.contactEmail !== current.contactEmail) {
+    const changesSoFar = parseInt(current.contactEmailChanges ?? "0", 10) || 0;
+    if (changesSoFar >= 1) {
+      redirect("/admin/settings?email=locked");
+    }
+    patch.contactEmailChanges = String(changesSoFar + 1);
+  }
+
   await setSettings(patch);
 
   revalidatePath("/", "layout");

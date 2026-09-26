@@ -9,7 +9,11 @@ import ThemeToggle from "./ThemeToggle";
 export default async function Header() {
   const [user, settings] = await Promise.all([getSession(), getSettings()]);
   return (
-    <header className="site-header">
+    <>
+      {settings.announcementText && settings.announcementText.trim() !== "" && (
+        <div className="announcement-bar">{settings.announcementText}</div>
+      )}
+      <header className="site-header">
       <div className="container header-inner">
         <Link href="/" className="brand">
           {settings.storeName}
@@ -49,5 +53,6 @@ export default async function Header() {
         </nav>
       </div>
     </header>
+    </>
   );
 }

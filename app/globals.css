@@ -1325,3 +1325,42 @@ a:focus-visible, button:focus-visible {
 .data-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 .data-table th, .data-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
 .data-table th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+/* ============================================================
+   UNIC — owner dashboard chart, announcement, danger zone
+   ============================================================ */
+
+/* --- Announcement bar --- */
+.announcement-bar {
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  color: #fff;
+  text-align: center;
+  padding: 9px 16px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* --- Revenue chart --- */
+.chart-card { margin: 18px 0; padding: 20px; }
+.revenue-chart { width: 100%; height: auto; }
+
+/* --- Danger zone (account deletion) --- */
+.danger-zone { border: 1px solid var(--red); }
+.btn-danger {
+  background: var(--red);
+  color: #fff;
+  font-weight: 600;
+}
+.btn-danger:hover { background: #b91c1c; }
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+.check-row input { width: 18px; height: 18px; }
+
+/* --- Export button inside subtitle --- */
+.page-subtitle .btn { margin-left: 8px; }

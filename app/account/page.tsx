@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { updateProfile, changePassword } from "@/lib/actions/settings";
+import DeleteAccount from "@/components/DeleteAccount";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,8 @@ export default async function AccountPage({
             </button>
           </div>
         </form>
+
+        <DeleteAccount email={user.email} isAdmin={user.role === "ADMIN"} />
       </div>
     </div>
   );

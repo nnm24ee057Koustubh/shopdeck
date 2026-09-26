@@ -6,15 +6,22 @@ export const dynamic = "force-dynamic";
 export default async function AdminSettingsPage({
   searchParams,
 }: {
-  searchParams: { saved?: string; pwerror?: string };
+  searchParams: { saved?: string; pwerror?: string; email?: string };
 }) {
   const settings = await getSettings();
   const saved = searchParams.saved === "1";
   const pwError = searchParams.pwerror;
+  const emailLocked = (parseInt(settings.contactEmailChanges ?? "0", 10) || 0) >= 1;
+  const emailChangeBlocked = searchParams.email === "locked";
 
   return (
     <div>
       <h1 className="page-title">Settings</h1>
+      {emailChangeBlocked && (
+        <div className="banner banner-error">
+          The contact email cannot be changed again — it was already changed once and is now permanently locked.
+        </div>
+      )}
       {saved && <div className="banner banner-success">Saved successfully.</div>}
       {pwError === "1" && <div className="banner banner-error">Current password is incorrect.</div>}
       {pwError === "short" || pwError === "weak" ? (
@@ -33,7 +40,18 @@ export default async function AdminSettingsPage({
           <div className="form-grid">
             <div>
               <label htmlFor="contactEmail">Contact email</label>
-              <input id="contactEmail" name="contactEmail" type="email" defaultValue={settings.contactEmail} />
+              <input
+                id="contactEmail"
+                name="contactEmail"
+                type="email"
+                defaultValue={settings.contactEmail}
+                disabled={emailLocked}
+              />
+              <p className="small muted mt-8">
+                {emailLocked
+                  ? "🔒 This email is permanently locked — it was already changed once."
+                  : "⚠️ You can change this email exactly one time. After that it locks forever."}
+              </p>
             </div>
             <div>
               <label htmlFor="contactPhone">Contact phone</label>
@@ -43,6 +61,18 @@ export default async function AdminSettingsPage({
           <div>
             <label htmlFor="businessAddress">Business address</label>
             <textarea id="businessAddress" name="businessAddress" defaultValue={settings.businessAddress} />
+          </div>
+          <div>
+            <label htmlFor="announcementText">Announcement banner (shown to all customers)</label>
+            <input
+              id="announcementText"
+              name="announcementText"
+              type="text"
+              maxLength={140}
+              placeholder="e.g. Free delivery on orders above ₹499 — limited time!"
+              defaultValue={settings.announcementText}
+            />
+            <p className="small muted mt-8">Leave empty to hide the banner.</p>
           </div>
           <div>
             <label htmlFor="upiVpa">UPI VPA (shown with COD orders)</label>

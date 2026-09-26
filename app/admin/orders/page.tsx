@@ -32,7 +32,10 @@ export default async function AdminOrdersPage({
   return (
     <div>
       <h1 className="page-title">Orders</h1>
-      <p className="page-subtitle">Live ledger — every order, every action.</p>
+      <p className="page-subtitle">
+        Live ledger — every order, every action.{" "}
+        <a href="/admin/orders/export" className="btn btn-outline btn-sm">⬇ Export CSV</a>
+      </p>
 
       <div className="chips">
         <Link href="/admin/orders" className={`chip ${!validFilter ? "chip-active" : ""}`}>
