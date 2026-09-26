@@ -46,6 +46,9 @@ export default async function EditProductPage({
           costPriceRupees: String(product.costPrice / 100),
           stock: String(product.stock),
           imageUrl: product.imageUrl,
+          images: product.images ?? "",
+          badge: product.badge ?? "",
+          dealPriceRupees: product.dealPrice ? String(product.dealPrice / 100) : "",
           categoryId: product.categoryId ? String(product.categoryId) : "",
           active: product.active,
         }}

@@ -51,6 +51,9 @@ model Product {
   costPrice   Int        @default(0)
   stock       Int        @default(0)
   imageUrl    String
+  images      String?
+  badge       String?
+  dealPrice   Int?
   categoryId  Int?
   category    Category?  @relation(fields: [categoryId], references: [id])
   active      Boolean    @default(true)

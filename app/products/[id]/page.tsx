@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { formatINR } from "@/lib/format";
 import ProductPurchase from "@/components/ProductPurchase";
 import ProductCard from "@/components/ProductCard";
+import ProductGallery from "@/components/ProductGallery";
 import ShareWhatsApp from "@/components/ShareWhatsApp";
 import ReviewForm from "@/components/ReviewForm";
 import { withRatings } from "@/lib/ratings";
@@ -46,6 +47,15 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
   });
   const related = withRatings(relatedRaw);
 
+  const images = product.images
+    ? product.images.split(",").map((s) => s.trim()).filter(Boolean)
+    : [product.imageUrl];
+
+  const deal =
+    product.dealPrice !== null && product.dealPrice < product.price ? product.dealPrice : null;
+  const savePct = deal ? Math.round(((product.price - deal) / product.price) * 100) : 0;
+  const effectivePrice = deal ?? product.price;
+
   const stockClass =
     product.stock <= 0 ? "stock-out" : product.stock < 5 ? "stock-low" : "stock-ok";
   const stockText =
@@ -63,8 +73,7 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
         </Link>
       </p>
       <div className="product-detail">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="detail-image" src={product.imageUrl} alt={product.name} />
+        <ProductGallery images={images} alt={product.name} />
 
         <div>
           {product.category && (
@@ -72,9 +81,30 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
               {product.category.name}
             </Link>
           )}
+          {product.badge && <span className="product-badge product-badge-inline">{product.badge}</span>}
           <h1>{product.name}</h1>
+          {avgRating !== null && (
+            <div className="rating-row">
+              <span className="rating-stars">
+                {"★".repeat(Math.round(avgRating))}
+                {"☆".repeat(Math.max(0, 5 - Math.round(avgRating)))}
+              </span>
+              <span className="rating-count">
+                {avgRating.toFixed(1)} · {product.reviews.length} review
+                {product.reviews.length === 1 ? "" : "s"}
+              </span>
+            </div>
+          )}
           <div className={stockClass}>{stockText}</div>
-          <div className="price-lg">{formatINR(product.price)}</div>
+          <div className="deal-pricing">
+            <span className="deal-price">{formatINR(effectivePrice)}</span>
+            {deal !== null && (
+              <>
+                <span className="deal-mrp">{formatINR(product.price)}</span>
+                <span className="deal-save">{savePct}% OFF</span>
+              </>
+            )}
+          </div>
           <p className="muted" style={{ whiteSpace: "pre-line" }}>
             {product.description}
           </p>
@@ -83,18 +113,20 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
               product={{
                 id: product.id,
                 name: product.name,
-                price: product.price,
+                price: effectivePrice,
                 imageUrl: product.imageUrl,
               }}
               stock={product.stock}
             />
           </div>
           <div className="mt-16">
-            <ShareWhatsApp text={`${product.name} — ${formatINR(product.price)} on Unic`} />
+            <ShareWhatsApp text={`${product.name} — ${formatINR(effectivePrice)} on Unic`} />
           </div>
-          <p className="small muted mt-16">
-            Free delivery on orders above ₹499 · Pay online or Cash on Delivery
-          </p>
+          <ul className="detail-perks">
+            <li>🚚 Free delivery on orders above ₹499</li>
+            <li>💳 Pay online (UPI / cards) or Cash on Delivery</li>
+            <li>📦 Order updates straight to your account</li>
+          </ul>
         </div>
       </div>
 

@@ -8,6 +8,9 @@ export type ProductFormValues = {
   costPriceRupees: string;
   stock: string;
   imageUrl: string;
+  images: string;
+  badge: string;
+  dealPriceRupees: string;
   categoryId: string;
   active: boolean;
 };
@@ -31,6 +34,9 @@ export default function ProductForm({
       costPriceRupees: "",
       stock: "10",
       imageUrl: "",
+      images: "",
+      badge: "",
+      dealPriceRupees: "",
       categoryId: "",
       active: true,
     };
@@ -79,8 +85,27 @@ export default function ProductForm({
       </div>
 
       <div>
-        <label htmlFor="imageUrl">Image URL</label>
+        <label htmlFor="imageUrl">Main image URL</label>
         <input id="imageUrl" name="imageUrl" type="url" required defaultValue={v.imageUrl} placeholder="https://images.unsplash.com/photo-..." />
+      </div>
+
+      <div>
+        <label htmlFor="images">Extra image URLs (optional, separate with commas)</label>
+        <input id="images" name="images" type="text" defaultValue={v.images} placeholder="https://…, https://…, https://…" />
+        <p className="small muted">Shown as thumbnails in the product gallery. The main image is always included automatically.</p>
+      </div>
+
+      <div className="form-grid">
+        <div>
+          <label htmlFor="badge">Badge (optional)</label>
+          <input id="badge" name="badge" type="text" defaultValue={v.badge} placeholder="e.g. Bestseller / New" />
+          <p className="small muted">A small label shown on the product card.</p>
+        </div>
+        <div>
+          <label htmlFor="dealPrice">Deal of the Day price (₹, optional)</label>
+          <input id="dealPrice" name="dealPrice" type="number" min="0" step="0.01" defaultValue={v.dealPriceRupees} placeholder="1999" />
+          <p className="small muted">Lower than the selling price = product becomes the Deal of the Day on the homepage.</p>
+        </div>
       </div>
 
       <div className="checkbox-row">

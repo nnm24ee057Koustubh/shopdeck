@@ -34,6 +34,9 @@ export async function createProduct(formData: FormData): Promise<void> {
   const stock = intOr(formData.get("stock"), 0);
   const categoryId = intOr(formData.get("categoryId"), 0);
   const active = formData.get("active") === "on";
+  const images = String(formData.get("images") ?? "").trim();
+  const badge = String(formData.get("badge") ?? "").trim();
+  const dealPriceRaw = rupeesToPaise(formData.get("dealPrice"));
 
   if (!name || price <= 0 || !imageUrl) {
     redirect("/admin/products/new?error=1");
@@ -47,6 +50,9 @@ export async function createProduct(formData: FormData): Promise<void> {
       costPrice,
       stock,
       imageUrl,
+      images: images || null,
+      badge: badge || null,
+      dealPrice: dealPriceRaw > 0 ? dealPriceRaw : null,
       categoryId: categoryId > 0 ? categoryId : null,
       active,
     },
@@ -70,6 +76,9 @@ export async function updateProduct(formData: FormData): Promise<void> {
   const stock = intOr(formData.get("stock"), 0);
   const categoryId = intOr(formData.get("categoryId"), 0);
   const active = formData.get("active") === "on";
+  const images = String(formData.get("images") ?? "").trim();
+  const badge = String(formData.get("badge") ?? "").trim();
+  const dealPriceRaw = rupeesToPaise(formData.get("dealPrice"));
 
   const existing = await db.product.findUnique({ where: { id } });
   if (!existing) redirect("/admin/products");
@@ -87,6 +96,9 @@ export async function updateProduct(formData: FormData): Promise<void> {
       costPrice,
       stock,
       imageUrl,
+      images: images || null,
+      badge: badge || null,
+      dealPrice: dealPriceRaw > 0 ? dealPriceRaw : null,
       categoryId: categoryId > 0 ? categoryId : null,
       active,
     },

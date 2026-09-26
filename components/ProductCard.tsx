@@ -6,6 +6,8 @@ export type ProductCardData = {
   id: number;
   name: string;
   price: number;
+  dealPrice?: number | null;
+  badge?: string | null;
   imageUrl: string;
   stock: number;
   avgRating?: number | null;
@@ -13,9 +15,13 @@ export type ProductCardData = {
 };
 
 export default function ProductCard({ product }: { product: ProductCardData }) {
+  const deal = product.dealPrice != null && product.dealPrice < product.price ? product.dealPrice : null;
+  const savePct = deal ? Math.round(((product.price - deal) / product.price) * 100) : 0;
   return (
-    <div className="product-card">
+    <div className={`product-card ${deal ? "product-card-deal" : ""}`}>
       <WishlistButton productId={product.id} />
+      {product.badge && <span className="product-badge">{product.badge}</span>}
+      {deal && <span className="product-deal-tag">{savePct}% OFF</span>}
       <Link href={`/products/${product.id}`} className="product-card-media">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={product.imageUrl} alt={product.name} loading="lazy" />
@@ -37,22 +43,22 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
           </div>
         )}
         <div className="product-card-price">
-          {new Intl.NumberFormat("en-IN", {
-            style: "currency",
-            currency: "INR",
-            minimumFractionDigits: product.price % 100 === 0 ? 0 : 2,
-            maximumFractionDigits: 2,
-          }).format(product.price / 100)}
+          {deal ? (
+            <>
+              <span className="price-now">₹{Math.round(deal / 100)}</span>
+              <span className="price-mrp">₹{Math.round(product.price / 100)}</span>
+            </>
+          ) : (
+            <span className="price-now">₹{Math.round(product.price / 100)}</span>
+          )}
         </div>
-        <AddToCartButton
-          product={{
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            imageUrl: product.imageUrl,
-          }}
-          disabled={product.stock <= 0}
-        />
+        {product.stock > 0 ? (
+          <AddToCartButton product={product} />
+        ) : (
+          <button type="button" className="btn" disabled>
+            Out of Stock
+          </button>
+        )}
       </div>
     </div>
   );
