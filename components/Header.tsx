@@ -22,6 +22,9 @@ export default async function Header() {
           <Link href="/" className="nav-link">
             Shop
           </Link>
+          <Link href="/wheel" className="nav-link">
+            🎡 Spin & Win
+          </Link>
           <Link href="/orders" className="nav-link">
             My Orders
           </Link>

@@ -28,6 +28,11 @@ export default async function HomePage() {
         <Link href="/products" className="btn">
           Shop all products →
         </Link>
+        <div className="hero-actions">
+          <Link href="/wheel" className="hero-wheel-cta">
+            🎡 Spin & Win a coupon — one free spin per account
+          </Link>
+        </div>
       </section>
 
       <section>

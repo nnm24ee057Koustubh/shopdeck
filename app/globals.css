@@ -1364,3 +1364,70 @@ a:focus-visible, button:focus-visible {
 
 /* --- Export button inside subtitle --- */
 .page-subtitle .btn { margin-left: 8px; }
+
+/* ============================================================
+   UNIC — spin-the-wheel game
+   ============================================================ */
+.wheel-page { max-width: 560px; margin: 0 auto; }
+.wheel-wrap { text-align: center; position: relative; }
+.wheel {
+  width: 280px;
+  height: 280px;
+  border-radius: 999px;
+  margin: 34px auto 20px;
+  position: relative;
+  border: 8px solid #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 0 0 6px rgba(79, 70, 229, 0.25);
+  transition: transform 4s cubic-bezier(0.12, 0.75, 0.05, 1);
+}
+[data-theme="dark"] .wheel { border-color: #131a2a; }
+.wheel-pointer {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 26px;
+  color: var(--accent);
+  z-index: 5;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+.wheel-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.wheel-btn { font-size: 1.05rem; padding: 14px 30px; }
+.wheel-result { margin-top: 22px; padding: 24px; }
+.wheel-won { border: 2px solid var(--green); }
+.wheel-nowin { border: 2px solid var(--border); }
+.coupon-code {
+  display: inline-block;
+  font-family: monospace;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 8px 18px;
+  border-radius: 10px;
+  margin: 10px 0;
+  cursor: pointer;
+  user-select: all;
+}
+.hero-actions { margin-top: 14px; animation: rise 0.6s ease 0.24s both; }
+.hero-wheel-cta {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.hero-wheel-cta:hover { color: #fff; }
+.coupon-guide { margin: 16px 0; padding: 20px; }
+.guide-list { margin: 8px 0 0; padding-left: 20px; }
+.guide-list li { margin: 6px 0; }

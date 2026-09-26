@@ -21,13 +21,17 @@ export default async function AdminCouponsPage({
 }) {
   await requireAdmin();
 
-  const [coupons, redeemed] = await Promise.all([
+  const [coupons, redeemed, spinStats] = await Promise.all([
     db.coupon.findMany({ orderBy: { createdAt: "desc" } }),
     db.order.aggregate({ _sum: { discount: true }, where: { discount: { gt: 0 } } }),
+    db.wheelSpin.aggregate({ _count: { _all: true } }),
   ]);
   const saved = searchParams.saved === "1";
   const error = searchParams.error ? ERRORS[searchParams.error] ?? "Something went wrong." : null;
   const totalDiscounted = redeemed._sum.discount ?? 0;
+  const activeCount = coupons.filter((c) => c.active).length;
+  const spinCount = spinStats._count._all;
+  const spinCoupons = coupons.filter((c) => c.code.startsWith("SPIN-")).length;
 
   return (
     <div>
@@ -35,8 +39,43 @@ export default async function AdminCouponsPage({
       {saved && <div className="banner banner-success">Coupon created.</div>}
       {error && <div className="banner banner-error">{error}</div>}
       <p className="muted">
-        Total discount given to customers so far: <strong>{(totalDiscounted / 100).toFixed(0) === String(Math.round(totalDiscounted / 100)) ? `₹${Math.round(totalDiscounted / 100)}` : `₹${(totalDiscounted / 100).toFixed(2)}`}</strong>
+        Total discount given to customers so far:{" "}
+        <strong>₹{Math.round(totalDiscounted / 100)}</strong>
       </p>
+
+      <div className="stat-cards">
+        <div className="stat-card">
+          <div className="stat-label">Coupons created</div>
+          <div className="stat-value">{coupons.length}</div>
+          <div className="small muted">{activeCount} active</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Spin-the-wheel spins</div>
+          <div className="stat-value">{spinCount}</div>
+          <div className="small muted">{spinCoupons} wheel coupons issued</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Discount given</div>
+          <div className="stat-value is-money">₹{Math.round(totalDiscounted / 100)}</div>
+          <div className="small muted">Across all orders</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Max allowed</div>
+          <div className="stat-value">90%</div>
+          <div className="small muted">or any flat ₹ amount</div>
+        </div>
+      </div>
+
+      <div className="card coupon-guide">
+        <h2 className="section-title mt-0">Owner's coupon rules</h2>
+        <ul className="guide-list">
+          <li>Percentage coupons: 1–90% off. Flat coupons: any ₹ amount off.</li>
+          <li>Always set a <strong>minimum order</strong> so a discount never eats your profit on small carts.</li>
+          <li>Set an <strong>expiry date</strong> — deadlines make people order instead of forgetting.</li>
+          <li>Each customer gets <strong>one spin</strong> on the wheel; winning codes are personal (SPIN-…) and expire in 30 days.</li>
+          <li>Turn a coupon off anytime — it stops working immediately, even for the wheel's codes.</li>
+        </ul>
+      </div>
 
       <div className="cart-layout">
         <form action={createCoupon} className="card form-stack">

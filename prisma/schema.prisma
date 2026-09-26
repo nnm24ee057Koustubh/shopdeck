@@ -22,6 +22,18 @@ model User {
   verifyCodeExpires DateTime?
   orders       Order[]
   reviews      Review[]
+  wheelSpins   WheelSpin[]
+}
+
+model WheelSpin {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prize      String
+  couponCode String
+  spunAt     DateTime @default(now())
+
+  @@unique([userId])
 }
 
 model Category {
