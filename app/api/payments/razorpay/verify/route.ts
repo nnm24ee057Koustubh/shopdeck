@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { razorpayConfigured } from "@/lib/settings";
+import { sendMail, notifyAdmin, orderEmailBody } from "@/lib/email";
+import { formatINR } from "@/lib/format";
 
 export async function POST(req: Request) {
   const user = await getSession();
@@ -79,6 +81,24 @@ export async function POST(req: Request) {
       note: `Payment verified online (${razorpayPaymentId}) — order auto-approved`,
     },
   });
+
+  // Email notifications (skipped automatically if not configured).
+  try {
+    const em = await orderEmailBody(order.id);
+    if (em?.customerEmail) {
+      await sendMail(
+        em.customerEmail,
+        `Payment received for order #${order.id} — thank you!`,
+        `Hello ${em.customerName},\n\nWe received your payment and your order is confirmed.\n\n${em.body}\n\nWe will ship it shortly.`
+      );
+      await notifyAdmin(
+        `PAID: order #${order.id} (${formatINR(order.total)})`,
+        `An online payment was verified and the order is auto-approved.\n\n${em.body}`
+      );
+    }
+  } catch {
+    // ignore email errors
+  }
 
   return NextResponse.json({ ok: true });
 }

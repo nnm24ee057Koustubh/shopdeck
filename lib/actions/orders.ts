@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/session";
 import { formatINR, statusLabel, statusTransitionAllowed } from "@/lib/format";
+import { notifyCustomerStatus } from "@/lib/email";
 
 type ItemSnapshot = { productId: number | null; qty: number }[];
 
@@ -68,6 +69,7 @@ export async function updateOrderStatus(formData: FormData): Promise<void> {
   });
 
   revalidateOrder(orderId);
+  await notifyCustomerStatus(orderId, status);
 }
 
 export async function approveOrder(formData: FormData): Promise<void> {
@@ -92,6 +94,7 @@ export async function approveOrder(formData: FormData): Promise<void> {
   });
 
   revalidateOrder(orderId);
+  await notifyCustomerStatus(orderId, "APPROVED");
 }
 
 export async function rejectOrder(formData: FormData): Promise<void> {
@@ -113,6 +116,7 @@ export async function rejectOrder(formData: FormData): Promise<void> {
   });
 
   revalidateOrder(orderId);
+  await notifyCustomerStatus(orderId, "REJECTED");
 }
 
 export async function refundOrder(formData: FormData): Promise<void> {

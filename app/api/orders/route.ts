@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { getSettings, razorpayConfigured } from "@/lib/settings";
+import { sendMail, notifyAdmin, orderEmailBody } from "@/lib/email";
 
 const FREE_SHIPPING_THRESHOLD = 49900; // ₹499 in paise
 const SHIPPING_FEE = 4900; // ₹49 in paise
@@ -152,6 +153,24 @@ export async function POST(req: Request) {
       })
     )
   );
+
+  // Email notifications (skipped automatically if GMAIL_USER/GMAIL_APP_PASSWORD are not set).
+  try {
+    const em = await orderEmailBody(order.id);
+    if (em?.customerEmail) {
+      await sendMail(
+        em.customerEmail,
+        `Order #${order.id} placed — thank you!`,
+        `Hi ${order.shipName},\n\nThanks for your order!\n\n${em.body}\n\nWe will confirm your order shortly. You can track it on the website.`
+      );
+      await notifyAdmin(
+        `New order #${order.id} — ${method === "COD" ? "Cash on Delivery" : "online payment"}`,
+        `You have received a new order.\n\n${em.body}`
+      );
+    }
+  } catch {
+    // never block order creation on email failure
+  }
 
   // --- COD: done ---
   if (method === "COD") {
