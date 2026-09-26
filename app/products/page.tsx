@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import ProductCard from "@/components/ProductCard";
+import { withRatings } from "@/lib/ratings";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +28,10 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
     db.product.findMany({
       where,
       orderBy,
-      include: { category: true },
+      include: { category: true, reviews: { select: { rating: true } } },
     }),
   ]);
+  const ratedProducts = withRatings(products);
 
   const activeCat = categories.find((c) => c.slug === cat);
 
@@ -101,7 +103,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Sea
         </div>
       ) : (
         <div className="product-grid">
-          {products.map((p) => (
+          {ratedProducts.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>

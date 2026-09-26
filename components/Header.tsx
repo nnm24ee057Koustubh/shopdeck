@@ -4,6 +4,7 @@ import { getSettings } from "@/lib/settings";
 import LogoutButton from "./LogoutButton";
 import CartCount from "./CartCount";
 import WishlistCount from "./WishlistCount";
+import ThemeToggle from "./ThemeToggle";
 
 export default async function Header() {
   const [user, settings] = await Promise.all([getSession(), getSettings()]);
@@ -22,6 +23,7 @@ export default async function Header() {
           </Link>
           <CartCount />
           <WishlistCount />
+          <ThemeToggle />
           {user ? (
             <>
               {user.role === "ADMIN" && (

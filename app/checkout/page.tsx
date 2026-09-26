@@ -138,7 +138,39 @@ export default function CheckoutPage() {
 
   const subtotal = cart.items.reduce((sum, i) => sum + i.price * i.qty, 0);
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-  const total = subtotal + shipping;
+  const [couponInput, setCouponInput] = useState("");
+  const [coupon, setCoupon] = useState<{ code: string; discount: number; description: string } | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const total = subtotal + shipping - (coupon?.discount ?? 0);
+
+  useEffect(() => {
+    setCoupon(null);
+    setCouponError("");
+  }, [subtotal]);
+
+  async function applyCoupon() {
+    setCouponError("");
+    if (!couponInput.trim()) {
+      setCouponError("Enter a coupon code.");
+      return;
+    }
+    try {
+      const res = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponInput, subtotal }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCoupon(null);
+        setCouponError(data.error ?? "This coupon is not valid.");
+        return;
+      }
+      setCoupon(data);
+    } catch {
+      setCouponError("Could not check the coupon. Please try again.");
+    }
+  }
 
   const addressValid = useMemo(
     () =>
@@ -174,6 +206,7 @@ export default function CheckoutPage() {
           items: cart.items.map((i) => ({ productId: i.id, qty: i.qty })),
           address,
           method,
+          couponCode: coupon?.code ?? "",
         }),
       });
       const data: {
@@ -442,6 +475,39 @@ export default function CheckoutPage() {
             <span>Shipping</span>
             <span>{shipping === 0 ? "FREE" : formatINR(shipping)}</span>
           </div>
+          <div className="coupon-box">
+            {coupon ? (
+              <div className="banner banner-success coupon-applied">
+                <span>
+                  🎟️ <strong>{coupon.code}</strong> applied — {coupon.description}
+                </span>
+                <button type="button" className="coupon-remove" onClick={() => setCoupon(null)}>
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="coupon-row">
+                  <input
+                    type="text"
+                    placeholder="Coupon code"
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                  />
+                  <button type="button" className="btn btn-outline btn-sm" onClick={applyCoupon}>
+                    Apply
+                  </button>
+                </div>
+                {couponError && <p className="small" style={{ color: "var(--red)" }}>{couponError}</p>}
+              </>
+            )}
+          </div>
+          {coupon && (
+            <div className="summary-row coupon-discount">
+              <span>Discount</span>
+              <span>−{formatINR(coupon.discount)}</span>
+            </div>
+          )}
           <div className="summary-row summary-total">
             <span>Total</span>
             <span>{formatINR(total)}</span>

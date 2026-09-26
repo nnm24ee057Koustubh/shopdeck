@@ -8,6 +8,8 @@ export type ProductCardData = {
   price: number;
   imageUrl: string;
   stock: number;
+  avgRating?: number | null;
+  reviewCount?: number;
 };
 
 export default function ProductCard({ product }: { product: ProductCardData }) {
@@ -24,6 +26,15 @@ export default function ProductCard({ product }: { product: ProductCardData }) {
         </Link>
         {product.stock > 0 && product.stock <= 5 && (
           <div className="stock-badge-low">Only {product.stock} left</div>
+        )}
+        {typeof product.avgRating === "number" && (product.reviewCount ?? 0) > 0 && (
+          <div className="rating-row">
+            <span className="rating-stars">
+              {"★".repeat(Math.round(product.avgRating))}
+              {"☆".repeat(Math.max(0, 5 - Math.round(product.avgRating)))}
+            </span>
+            <span className="rating-count">{product.avgRating.toFixed(1)} ({product.reviewCount})</span>
+          </div>
         )}
         <div className="product-card-price">
           {new Intl.NumberFormat("en-IN", {

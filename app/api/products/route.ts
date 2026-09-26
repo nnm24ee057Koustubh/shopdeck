@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { withRatings } from "@/lib/ratings";
 
 export const dynamic = "force-dynamic";
 
@@ -16,8 +17,18 @@ export async function GET(req: Request) {
     where: ids.length > 0 ? { id: { in: ids }, active: true } : { active: true },
     orderBy: { createdAt: "desc" },
     take: ids.length > 0 ? 100 : 12,
-    select: { id: true, name: true, price: true, imageUrl: true, stock: true },
+    include: { reviews: { select: { rating: true } } },
   });
 
-  return NextResponse.json({ products });
+  const rated = withRatings(products).map((p) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    imageUrl: p.imageUrl,
+    stock: p.stock,
+    avgRating: p.avgRating,
+    reviewCount: p.reviewCount,
+  }));
+
+  return NextResponse.json({ products: rated });
 }

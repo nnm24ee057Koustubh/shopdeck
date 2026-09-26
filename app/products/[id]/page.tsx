@@ -5,6 +5,9 @@ import { formatINR } from "@/lib/format";
 import ProductPurchase from "@/components/ProductPurchase";
 import ProductCard from "@/components/ProductCard";
 import ShareWhatsApp from "@/components/ShareWhatsApp";
+import ReviewForm from "@/components/ReviewForm";
+import { withRatings } from "@/lib/ratings";
+import { getSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -14,11 +17,24 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
 
   const product = await db.product.findUnique({
     where: { id },
-    include: { category: true },
+    include: {
+      category: true,
+      reviews: {
+        include: { user: { select: { name: true } } },
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
   if (!product || !product.active) notFound();
+  const session = await getSession();
+  const myReview = session
+    ? product.reviews.find((r) => r.userId === session.id) ?? null
+    : null;
+  const avgRating = product.reviews.length
+    ? Math.round((product.reviews.reduce((s, r) => s + r.rating, 0) / product.reviews.length) * 10) / 10
+    : null;
 
-  const related = await db.product.findMany({
+  const relatedRaw = await db.product.findMany({
     where: {
       active: true,
       id: { not: product.id },
@@ -26,7 +42,9 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
     },
     orderBy: { createdAt: "desc" },
     take: 4,
+    include: { reviews: { select: { rating: true } } },
   });
+  const related = withRatings(relatedRaw);
 
   const stockClass =
     product.stock <= 0 ? "stock-out" : product.stock < 5 ? "stock-low" : "stock-ok";
@@ -90,6 +108,51 @@ export default async function ProductDetailPage({ params }: { params: { id: stri
           </div>
         </section>
       )}
+
+      <section className="mt-24">
+        <h2 className="section-title">
+          Reviews{" "}
+          {avgRating !== null && (
+            <span className="rating-row">
+              <span className="rating-stars">
+                {"★".repeat(Math.round(avgRating))}
+                {"☆".repeat(Math.max(0, 5 - Math.round(avgRating)))}
+              </span>
+              <span className="rating-count">
+                {avgRating.toFixed(1)} · {product.reviews.length} review
+                {product.reviews.length === 1 ? "" : "s"}
+              </span>
+            </span>
+          )}
+        </h2>
+        <div className="card review-section">
+          <ReviewForm
+            productId={product.id}
+            signedIn={Boolean(session)}
+            existing={myReview ? { rating: myReview.rating, text: myReview.text } : null}
+          />
+          {product.reviews.length === 0 ? (
+            <p className="muted mt-16">
+              No reviews yet. Be the first to share what you think!
+            </p>
+          ) : (
+            <ul className="review-list">
+              {product.reviews.map((r) => (
+                <li key={r.id} className="review-item">
+                  <div className="review-head">
+                    <span className="rating-stars">
+                      {"★".repeat(r.rating)}
+                      {"☆".repeat(Math.max(0, 5 - r.rating))}
+                    </span>
+                    <span className="muted small">{r.user.name}</span>
+                  </div>
+                  {r.text && <p className="review-text">{r.text}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

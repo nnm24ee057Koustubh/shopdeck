@@ -1,18 +1,21 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import ProductCard from "@/components/ProductCard";
+import { withRatings } from "@/lib/ratings";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [categories, featured] = await Promise.all([
+  const [categories, rawFeatured] = await Promise.all([
     db.category.findMany({ orderBy: { name: "asc" } }),
     db.product.findMany({
       where: { active: true },
       orderBy: { createdAt: "desc" },
       take: 8,
+      include: { reviews: { select: { rating: true } } },
     }),
   ]);
+  const featured = withRatings(rawFeatured);
 
   return (
     <div>

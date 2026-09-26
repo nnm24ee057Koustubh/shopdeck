@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { getSettings, razorpayConfigured } from "@/lib/settings";
+import { validateCoupon } from "@/lib/coupons";
 import { sendMail, notifyAdmin, orderEmailBody } from "@/lib/email";
 
 const FREE_SHIPPING_THRESHOLD = 49900; // ₹499 in paise
@@ -112,7 +113,23 @@ export async function POST(req: Request) {
 
   const subtotal = items.reduce((sum, i) => sum + (byId.get(i.productId)?.price ?? 0) * i.qty, 0);
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-  const total = subtotal + shipping;
+
+  // --- coupon (validated again on the server) ---
+  const couponCode = String(b.couponCode ?? "").trim();
+  let discount = 0;
+  if (couponCode) {
+    const result = await validateCoupon(couponCode, subtotal);
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+    discount = result.discount;
+    await db.coupon.update({
+      where: { code: result.code },
+      data: { usedCount: { increment: 1 } },
+    }).catch(() => undefined);
+  }
+
+  const total = Math.max(0, subtotal + shipping - discount);
 
   // --- create the order ---
   const last = await db.order.findFirst({ orderBy: { id: "desc" }, select: { id: true } });
@@ -124,6 +141,8 @@ export async function POST(req: Request) {
       userId: user.id,
       status: "PLACED",
       total,
+      couponCode: couponCode || null,
+      discount,
       paymentMethod: method,
       paymentStatus: method === "COD" ? "COD_PENDING" : "PENDING",
       ...address,
